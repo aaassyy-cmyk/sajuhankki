@@ -224,7 +224,7 @@
 
     try {
       // ⚠️ Vercel 배포 후 아래 URL이 자동으로 맞게 연결돼요
-      const res = await fetch('/api/analyze', {
+      const res = await fetch('/API/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ year, month, day, calLabel, today }),
