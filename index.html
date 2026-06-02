@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>사주한끼</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: #f7f5f0; color: #1a1a1a; min-height: 100vh; }
+    .container { max-width: 420px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+    .header { text-align: center; margin-bottom: 2rem; }
+    .logo { font-family: 'Noto Serif KR', serif; font-size: 28px; font-weight: 600; color: #1a1a1a; letter-spacing: -0.5px; }
+    .logo span { color: #D85A30; }
+    .tagline { font-size: 13px; color: #888; margin-top: 6px; }
+    .card { background: #fff; border-radius: 16px; padding: 1.25rem; margin-bottom: 1rem; border: 1px solid #ebebeb; }
+    .input-label { font-size: 13px; color: #555; margin-bottom: 10px; font-weight: 500; }
+    .date-row { display: flex; gap: 8px; }
+    .date-row select { flex: 1; font-family: 'Noto Sans KR', sans-serif; font-size: 15px; padding: 10px 8px; border: 1px solid #e0e0e0; border-radius: 10px; background: #fafafa; color: #1a1a1a; appearance: none; text-align: center; cursor: pointer; transition: border-color 0.15s; }
+    .date-row select:focus { outline: none; border-color: #D85A30; }
+    .btn-main { width: 100%; padding: 15px; background: #D85A30; color: #fff; border: none; border-radius: 12px; font-family: 'Noto Sans KR', sans-serif; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 0.75rem; transition: opacity 0.15s, transform 0.1s; letter-spacing: -0.3px; }
+    .btn-main:hover { opacity: 0.88; }
+    .btn-main:active { transform: scale(0.98); }
+    .btn-main:disabled { opacity: 0.45; cursor: not-allowed; }
+    .loading { display: none; text-align: center; padding: 3rem 1rem; }
+    .loading.visible { display: block; }
+    .loading-emoji { font-size: 40px; margin-bottom: 16px; }
+    .loading-text { font-size: 15px; color: #555; margin-bottom: 6px; }
+    .loading-sub { font-size: 12px; color: #aaa; }
+    .dots span { display: inline-block; animation: dot 1.2s infinite; }
+    .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dot { 0%,80%,100%{transform:translateY(0);opacity:0.4} 40%{transform:translateY(-5px);opacity:1} }
+    .result { display: none; }
+    .result.visible { display: block; }
+    .section-label { font-size: 11px; color: #aaa; margin-bottom: 10px; letter-spacing: 0.3px; }
+    .pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .pill { font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 20px; }
+    .pill-fire  { background: #FAECE7; color: #993C1D; }
+    .pill-water { background: #E6F1FB; color: #185FA5; }
+    .pill-wood  { background: #EAF3DE; color: #3B6D11; }
+    .pill-metal { background: #F1EFE8; color: #5F5E5A; }
+    .pill-earth { background: #FAEEDA; color: #854F0B; }
+    .food-center { text-align: center; padding: 0.5rem 0 1.25rem; }
+    .food-emoji { font-size: 60px; display: block; margin-bottom: 10px; }
+    .food-name { font-family: 'Noto Serif KR', serif; font-size: 26px; font-weight: 600; color: #1a1a1a; margin-bottom: 14px; }
+    .food-reason { background: #FAECE7; border-radius: 12px; padding: 14px 16px; font-size: 14px; line-height: 1.8; color: #712B13; text-align: left; }
+    .food-reason strong { color: #D85A30; font-weight: 500; }
+    .shop-label { font-size: 11px; color: #aaa; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .shop-label::after { content: ''; flex: 1; height: 1px; background: #f0f0f0; }
+    .product { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
+    .product:last-of-type { border-bottom: none; padding-bottom: 0; }
+    .p-thumb { width: 52px; height: 52px; border-radius: 10px; background: #FAECE7; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; border: 1px solid #F5C4B3; }
+    .p-info { flex: 1; min-width: 0; }
+    .p-name { font-size: 13px; font-weight: 500; color: #1a1a1a; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .p-sub { font-size: 11px; color: #aaa; }
+    .p-btn { font-size: 12px; color: #993C1D; border: 1px solid #F0997B; border-radius: 20px; padding: 6px 13px; background: none; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; white-space: nowrap; flex-shrink: 0; transition: background 0.15s; }
+    .p-btn:hover { background: #FAECE7; }
+    .ad-notice { margin-top: 12px; padding: 10px 12px; background: #fafafa; border-radius: 8px; display: flex; align-items: flex-start; gap: 7px; }
+    .ad-badge { font-size: 10px; font-weight: 500; color: #854F0B; background: #FAEEDA; padding: 2px 6px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; }
+    .ad-text { font-size: 11px; color: #aaa; line-height: 1.6; }
+    .btn-reset { width: 100%; padding: 13px; background: none; border: 1px solid #e0e0e0; border-radius: 12px; font-family: 'Noto Sans KR', sans-serif; font-size: 14px; color: #888; cursor: pointer; margin-top: 0.5rem; transition: all 0.15s; }
+    .btn-reset:hover { background: #f5f5f5; color: #333; }
+    .error { display: none; margin-top: 10px; padding: 12px 14px; background: #FAECE7; border-radius: 10px; font-size: 13px; color: #993C1D; line-height: 1.6; }
+    .error.visible { display: block; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="logo">사주<span>한끼</span></div>
+    <div class="tagline">사주로 보는 오늘의 밥상 🥢</div>
+  </div>
+
+  <div id="input-section">
+    <div class="card">
+      <div class="input-label">생년월일을 알려주세요</div>
+      <div class="date-row" style="margin-bottom: 8px;">
+        <select id="sel-cal" style="flex: none; width: 100%;">
+          <option value="solar">양력</option>
+          <option value="lunar">음력</option>
+          <option value="lunar_leap">음력 윤달</option>
+        </select>
+      </div>
+      <div class="date-row">
+        <select id="sel-year"></select>
+        <select id="sel-month"></select>
+        <select id="sel-day"></select>
+      </div>
+    </div>
+    <button class="btn-main" id="btn-analyze">오늘 뭐 먹을까? →</button>
+    <div class="error" id="error-msg"></div>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="loading-emoji">🔮</div>
+    <div class="loading-text">사주 보는 중<span class="dots"><span>.</span><span>.</span><span>.</span></span></div>
+    <div class="loading-sub">오늘의 기운을 읽고 있어요</div>
+  </div>
+
+  <div class="result" id="result">
+    <div class="card">
+      <div class="section-label">오늘의 오행 기운</div>
+      <div class="pills" id="pills"></div>
+      <div class="food-center">
+        <span class="food-emoji" id="food-emoji">🍜</span>
+        <div class="food-name" id="food-name"></div>
+        <div class="food-reason" id="food-reason"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="shop-label">쿠팡에서 바로 주문</div>
+      <div id="product-list"></div>
+      <div class="ad-notice">
+        <span class="ad-badge">광고</span>
+        <span class="ad-text">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</span>
+      </div>
+    </div>
+    <button class="btn-reset" id="btn-reset">↩ 다른 날짜로 다시 보기</button>
+  </div>
+
+</div>
+<script>
+  const COUPANG_LINKS = {
+    '삼계탕':    'https://link.coupang.com/a/ee1ok2iYQS',
+    '부대찌개':  'https://link.coupang.com/a/ee1ratJ0Y8',
+    '떡볶이':    'https://link.coupang.com/a/ee1vcvNdEy',
+    '순대국밥':  'https://link.coupang.com/a/ee1yAqwQSG',
+    '짬뽕':      'https://link.coupang.com/a/ee1B5bnPs4',
+    '닭볶음탕':  'https://link.coupang.com/a/ee1D8Fp23E',
+    '냉면':      'https://link.coupang.com/a/ee1lRXOFhI',
+    '콩국수':    'https://link.coupang.com/a/ee1Hc6tobc',
+    '미역국':    'https://link.coupang.com/a/ee1JAr4PPE',
+    '해물탕':    'https://link.coupang.com/a/ee1K2oc3oW',
+    '북엇국':    'https://link.coupang.com/a/ee1M9e92I0',
+    '굴국밥':    'https://link.coupang.com/a/ee1PoRFdQq',
+    '비빔밥':    'https://link.coupang.com/a/ee1TboWwxw',
+    '된장찌개':  'https://link.coupang.com/a/ee1VYGcDxk',
+    '쌈밥':      'https://link.coupang.com/a/ee1YCzhsKO',
+    '버섯전골':  'https://link.coupang.com/a/ee1001Vvye',
+    '나물밥':    'https://link.coupang.com/a/ee13X5ZV6G',
+    '청국장':    'https://link.coupang.com/a/ee16HfzxrE',
+    '삼겹살':    'https://link.coupang.com/a/ee18GLt5KS',
+    '갈비탕':    'https://link.coupang.com/a/ee2aozK2Ng',
+    '닭가슴살':  'https://link.coupang.com/a/ee2cLVyKbI',
+    '순두부찌개':'https://link.coupang.com/a/ee2eNNAq96',
+    '감자탕':    'https://link.coupang.com/a/ee2gvHPaIC',
+    '설렁탕':    'https://link.coupang.com/a/ee2iHEgtYi',
+    '김치찌개':  'https://link.coupang.com/a/ee2kAJZTki',
+    '곰탕':      'https://link.coupang.com/a/ee2mNiQowK',
+    '잡채':      'https://link.coupang.com/a/ee2oKWOqyW',
+    '닭갈비':    'https://link.coupang.com/a/ee2qfaELmu',
+    '소고기무국':'https://link.coupang.com/a/ee2soYUloa',
+    '육개장':    'https://link.coupang.com/a/ee2uEfUhWK',
+  };
+
+  const OHAENG_FOOD_MAP = {
+    '화': ['삼계탕','부대찌개','떡볶이','순대국밥','짬뽕','닭볶음탕'],
+    '수': ['냉면','콩국수','미역국','해물탕','북엇국','굴국밥'],
+    '목': ['비빔밥','된장찌개','쌈밥','버섯전골','나물밥','청국장'],
+    '금': ['삼겹살','갈비탕','닭가슴살','순두부찌개','감자탕','설렁탕'],
+    '토': ['김치찌개','곰탕','잡채','닭갈비','소고기무국','육개장'],
+  };
+
+  const OHAENG = {
+    '화': { label: '화(火) 🔥', cls: 'pill-fire' },
+    '수': { label: '수(水) 💧', cls: 'pill-water' },
+    '목': { label: '목(木) 🌿', cls: 'pill-wood' },
+    '금': { label: '금(金) 🪨', cls: 'pill-metal' },
+    '토': { label: '토(土) 🌍', cls: 'pill-earth' },
+  };
+
+  function getCoupangLink(foodName) {
+    return COUPANG_LINKS[foodName] ||
+      'https://www.coupang.com/np/search?q=' + encodeURIComponent(foodName + ' 밀키트');
+  }
+
+  const now = new Date();
+  const selY = document.getElementById('sel-year');
+  const selM = document.getElementById('sel-month');
+  const selD = document.getElementById('sel-day');
+
+  for (let y = now.getFullYear() - 1; y >= 1930; y--) {
+    const o = document.createElement('option');
+    o.value = y; o.textContent = y + '년';
+    if (y === 1990) o.selected = true;
+    selY.appendChild(o);
+  }
+  ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'].forEach((m, i) => {
+    const o = document.createElement('option');
+    o.value = i + 1; o.textContent = m;
+    if (i + 1 === now.getMonth() + 1) o.selected = true;
+    selM.appendChild(o);
+  });
+
+  function fillDays(year, month) {
+    const cur = selD.value;
+    selD.innerHTML = '';
+    const days = new Date(year, month, 0).getDate();
+    for (let d = 1; d <= days; d++) {
+      const o = document.createElement('option');
+      o.value = d; o.textContent = d + '일';
+      if (d === parseInt(cur) || d === now.getDate()) o.selected = true;
+      selD.appendChild(o);
+    }
+  }
+  fillDays(selY.value, selM.value);
+  selY.addEventListener('change', () => fillDays(selY.value, selM.value));
+  selM.addEventListener('change', () => fillDays(selY.value, selM.value));
+
+  document.getElementById('btn-analyze').addEventListener('click', async () => {
+    const year = selY.value, month = selM.value, day = selD.value;
+    const today = now.getFullYear() + '년 ' + (now.getMonth()+1) + '월 ' + now.getDate() + '일';
+    const calType = document.getElementById('sel-cal').value;
+    const calLabel = calType === 'solar' ? '양력' : calType === 'lunar_leap' ? '음력 윤달' : '음력';
+    const err = document.getElementById('error-msg');
+    err.className = 'error';
+
+    document.getElementById('input-section').style.display = 'none';
+    document.getElementById('loading').className = 'loading visible';
+
+    try {
+      // ⚠️ Vercel 배포 후 아래 URL이 자동으로 맞게 연결돼요
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ year, month, day, calLabel, today }),
+      });
+
+      if (!res.ok) throw new Error('서버 오류: ' + res.status);
+
+      const result = await res.json();
+
+      // 오행 태그
+      const pillsEl = document.getElementById('pills');
+      pillsEl.innerHTML = '';
+      (result.ohaeng || []).forEach(og => {
+        const info = OHAENG[og];
+        if (!info) return;
+        const el = document.createElement('div');
+        el.className = 'pill ' + info.cls;
+        el.textContent = info.label;
+        pillsEl.appendChild(el);
+      });
+
+      // 음식 정보
+      document.getElementById('food-emoji').textContent = result.emoji || '🍽️';
+      document.getElementById('food-name').textContent = result.food || '';
+      document.getElementById('food-reason').innerHTML =
+        (result.reason || '').replace(/\[([^\]]+)\]/g, '<strong>$1</strong>');
+
+      // 상품 2개
+      const productList = document.getElementById('product-list');
+      productList.innerHTML = '';
+      const mainFood = result.food || '';
+      const mainLink = getCoupangLink(mainFood);
+      const isFixed = !!COUPANG_LINKS[mainFood];
+
+      const p1 = document.createElement('div');
+      p1.className = 'product';
+      p1.innerHTML = `
+        <div class="p-thumb">${result.emoji || '🍽️'}</div>
+        <div class="p-info">
+          <div class="p-name">${mainFood} 밀키트</div>
+          <div class="p-sub">쿠팡 · 밀키트/간편식${isFixed ? '' : ' · 검색결과'}</div>
+        </div>
+        <button class="p-btn" onclick="window.open('${mainLink}', '_blank')">구매하기</button>
+      `;
+      productList.appendChild(p1);
+
+      const mainOhaeng = (result.ohaeng || [])[0];
+      const sameGroup = (OHAENG_FOOD_MAP[mainOhaeng] || []).filter(f => f !== mainFood);
+      const secondFood = sameGroup[Math.floor(Math.random() * sameGroup.length)] || '김치찌개';
+      const secondLink = getCoupangLink(secondFood);
+
+      const p2 = document.createElement('div');
+      p2.className = 'product';
+      p2.innerHTML = `
+        <div class="p-thumb">🥘</div>
+        <div class="p-info">
+          <div class="p-name">${secondFood} 밀키트</div>
+          <div class="p-sub">쿠팡 · 이런 것도 어때요?</div>
+        </div>
+        <button class="p-btn" onclick="window.open('${secondLink}', '_blank')">구매하기</button>
+      `;
+      productList.appendChild(p2);
+
+      document.getElementById('loading').className = 'loading';
+      document.getElementById('result').className = 'result visible';
+
+    } catch(e) {
+      document.getElementById('loading').className = 'loading';
+      document.getElementById('input-section').style.display = '';
+      err.textContent = '앗, 사주를 읽는 데 실패했어요. 잠시 후 다시 시도해주세요.';
+      err.className = 'error visible';
+      console.error(e);
+    }
+  });
+
+  document.getElementById('btn-reset').addEventListener('click', () => {
+    document.getElementById('result').className = 'result';
+    document.getElementById('input-section').style.display = '';
+  });
+</script>
+</body>
+</html>
