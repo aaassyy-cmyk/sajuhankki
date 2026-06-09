@@ -17,14 +17,13 @@ export default async function handler(req, res) {
     '김치찌개','곰탕','잡채','닭갈비','소고기무국','육개장'
   ].join(', ');
 
-  const prompt = `당신은 사주명리학 전문가이자 음식 큐레이터입니다.
+const randomSeed = Math.floor(Math.random() * 1000);
+const prompt = `당신은 사주명리학 전문가이자 음식 큐레이터입니다. (seed: ${randomSeed})
 아래 생년월일의 사주를 분석하고, 오늘(${today}) 하루의 기운에 맞는 음식 1가지를 추천해주세요.
-
+30개 목록에서 다양하게 골라주세요.
 생년월일: ${year}년 ${month}월 ${day}일 (${calLabel})
-
 추천 음식은 아래 목록에서 우선적으로 골라주세요. 목록에 없는 음식이 더 잘 맞는다면 자유롭게 추천해도 좋아요.
 [추천 목록]: ${foodList}
-
 반드시 아래 JSON 형식으로만 응답하세요. 다른 텍스트나 마크다운은 절대 포함하지 마세요.
 {
   "ohaeng": ["화","수","목","금","토"] 중 오늘 강하게 작용하는 기운 2~3개 배열,
