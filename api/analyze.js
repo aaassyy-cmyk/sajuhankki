@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   ].join(', ');
 
 const dateSeed = `${year}${month}${day}${today}`;
-const prompt = `당신은 사주명리학 전문가이자 음식 큐레이터입니다. (seed: ${randomSeed})
+const prompt = `당신은 사주명리학 전문가이자 음식 큐레이터입니다. (seed: ${dateSeed})
 아래 생년월일의 사주를 분석하고, 오늘(${today}) 하루의 기운에 맞는 음식 1가지를 추천해주세요.
 30개 목록에서 다양하게 골라주세요.
 생년월일: ${year}년 ${month}월 ${day}일 (${calLabel})
